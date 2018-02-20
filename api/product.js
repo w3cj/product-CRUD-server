@@ -13,4 +13,21 @@ router.get('/', (req, res) => {
     });
 });
 
+router.get('/:id', (req, res, next) => {
+  if(!isNaN(req.params.id)) {
+    queries
+      .getOne(req.params.id)
+      .then(product => {
+        if(product) {
+          res.json(product);
+        } else {
+          next();
+        }
+      });
+  } else {
+    const error = new Error('Invalid id');
+    next(error);
+  }
+});
+
 module.exports = router;
