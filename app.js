@@ -4,6 +4,8 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
+const product = require('./api/product');
+
 const app = express();
 
 // uncomment after placing your favicon in /public
@@ -19,6 +21,8 @@ app.get('/', (req, res) => {
     message: 'Hello World!'
   });
 });
+
+app.use('/api/v1/products', product);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
