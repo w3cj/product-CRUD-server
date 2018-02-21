@@ -13,6 +13,38 @@ function validProduct(product) {
          product.quantity >= 0;
 }
 
+function validId(req, res, next) {
+  if(!isNaN(req.params.id)) {
+    next();
+  } else {
+    const error = new Error('Invalid id');
+    next(error);
+  }
+}
+
+function validProductMiddleware(req, res, next) {
+  if(validProduct(req.body)) {
+    next();
+  } else {
+    const error = new Error('Invalid product');
+    next(error);
+  }
+}
+
+function getProductFromBody(body) {
+  const { title, description, price, quantity, image } = body;
+  // insert into the DB
+  const product = {
+    title,
+    description,
+    price,
+    quantity,
+    image
+  };
+
+  return product;
+}
+
 // /api/v1/products
 router.get('/', (req, res) => {
   queries
@@ -22,46 +54,40 @@ router.get('/', (req, res) => {
     });
 });
 
-router.get('/:id', (req, res, next) => {
-  if(!isNaN(req.params.id)) {
-    queries
-      .getOne(req.params.id)
-      .then(product => {
-        if(product) {
-          res.json(product);
-        } else {
-          next();
-        }
-      });
-  } else {
-    const error = new Error('Invalid id');
-    next(error);
-  }
+router.get('/:id', validId, (req, res, next) => {
+  queries
+    .getOne(req.params.id)
+    .then(product => {
+      if(product) {
+        res.json(product);
+      } else {
+        next();
+      }
+    });
 });
 
-router.post('/', (req, res, next) => {
-  if(validProduct(req.body)) {
-    const { title, description, price, quantity, image } = req.body;
-    // insert into the DB
-    const product = {
-      title,
-      description,
-      price,
-      quantity,
-      image
-    };
+router.post('/', validProductMiddleware, (req, res) => {
+  const product = getProductFromBody(req.body);
 
-    queries
-      .create(product)
-      .then(id => {
-        res.json({
-          id
-        });
+  queries
+    .create(product)
+    .then(id => {
+      res.json({
+        id
       });
-  } else {
-    const error = new Error('Invalid product');
-    next(error);
-  }
+    });
+});
+
+router.put('/:id', validId, validProductMiddleware, (req, res) => {
+  const product = getProductFromBody(req.body);
+
+  queries
+    .update(req.params.id, product)
+    .then(() =>{
+      res.json({
+        message: 'Updated!'
+      });
+    });
 });
 
 module.exports = router;
