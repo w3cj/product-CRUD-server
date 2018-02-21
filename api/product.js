@@ -90,4 +90,14 @@ router.put('/:id', validId, validProductMiddleware, (req, res) => {
     });
 });
 
+router.delete('/:id', validId, (req, res) => {
+  queries
+    .delete(req.params.id)
+    .then(() => {
+      res.json({
+        message: 'Deleted!'
+      });
+    });
+});
+
 module.exports = router;
