@@ -1,5 +1,28 @@
 # Product API Server
 
-# ERD
+## Pre-requisites
 
-![](https://www.lucidchart.com/publicSegments/view/8e6b712f-0b8e-4ab6-9e69-ca2b5c31b395/image.png)
+* postgres installed locally
+  * OSX - brew install postgres
+* npm install -g knex
+
+## Setup
+
+```sh
+npm install # install dependencies
+createdb cjs_store # create postgres db
+knex migrate:latest # create tables in db
+knex seed:run # add sample data to db
+```
+
+## Development Start
+
+```sh
+npm run dev
+```
+
+## Production Start
+
+```sh
+npm start
+```
